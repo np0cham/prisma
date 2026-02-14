@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client"
   output   = "../generated/prisma"
@@ -21,7 +15,10 @@ model UserProfile{
     instruments String[]
 
     likes LikeArtist[]
+    questions Question[]
+    comments Comment[]
 }
+
 model Artist {
   id          String       @id @default(uuid())
   name        String
@@ -39,5 +36,46 @@ model LikeArtist {
   artist    Artist      @relation(fields: [artistId], references: [id])
   artistId  String
 
-  @@unique([userId, artistId]) // 同じ組み合わせを禁止
+  @@unique([userId, artistId]) 
+}
+
+model Question {
+  id              String   @id @default(uuid())
+  userId          String
+  user            UserProfile @relation(fields: [userId], references: [id])
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  title           String
+  content         String
+  attachments     String[]
+  
+  showUsername    Boolean  @default(true)
+  category        PostCategory @default(QUESTION)
+  
+  comments        Comment[]
+}
+
+model Comment {
+  id              String   @id @default(uuid())
+  questionId      String
+  question        Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  
+  userId          String
+  user            UserProfile @relation(fields: [userId], references: [id])
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  content         String
+  attachments     String[]
+  
+  showUsername    Boolean  @default(true)
+}
+
+enum PostCategory {
+  QUESTION
+  PLAY
+  OTHER
 }
