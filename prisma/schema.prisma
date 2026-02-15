@@ -55,6 +55,7 @@ model Question {
   category        PostCategory @default(QUESTION)
   
   comments        Comment[]
+
   @@index([userId])
 }
 
@@ -71,7 +72,6 @@ model Comment {
   
   content         String
   attachments     String[]
-  
   showUsername    Boolean  @default(true)
 
   @@index([userId])
